@@ -12,10 +12,10 @@ $imagenumber = 0;
 $previoustime = 0;
 
 // pad naar font file
-putenv('GDFONTPATH=' . realpath('.'));
-$font_path = "LinLibertine_RZ";
-$font_path_bold = "LinLibertine_RB";
-$creditFont = "LinLibertine_RZI";
+putenv('GDFONTPATH=' . realpath('../fonts/LinLibertine'));
+$font_path = "LinLibertine_RZah.ttf";
+$font_path_bold = "LinLibertine_RBah.ttf";
+$creditFont = "LinLibertine_RZIah.ttf";
 
 
 // get the quotes (including title and author) from a CSV file, 
