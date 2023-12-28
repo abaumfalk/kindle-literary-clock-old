@@ -141,7 +141,7 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
         $metadataX2 = $width-($textWidth2+$margin);
         $metadataY = $height-$margin;
 
-        imagettftext($png_image, $creditFont_size, 0, $metadataX1, $metadataY-($textheight1*1.1), $black, $creditFont, $dash . $newCredits[0]);
+        imagettftext($png_image, $creditFont_size, 0, $metadataX1, floor($metadataY-($textheight1*1.1)), $black, $creditFont, $dash . $newCredits[0]);
         imagettftext($png_image, $creditFont_size, 0, $metadataX2, $metadataY, $black, $creditFont, $newCredits[1]);
         
     } else {
