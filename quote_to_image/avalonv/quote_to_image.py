@@ -18,9 +18,10 @@ imgsize = (600,800)                         # width/height of image
 color_bg = 255                              # white. color for the background
 color_norm = 125                            # grey. color for normal text
 color_high = 0                              # black. color for highlighted text
-fntname_norm = 'bookerly.ttf'               # font for normal text
-fntname_high = 'bookerlybold.ttf'           # font for highlighted text
-fntname_mdata = 'baskervilleboldbt.ttf'     # font for the author/title
+font_path = '../fonts/LinLibertine'
+fntname_norm = font_path + '/LinLibertine_RZah.ttf'   # font for normal text
+fntname_high = font_path + '/LinLibertine_RBah.ttf'   # font for highlighted text
+fntname_mdata = font_path + '/LinLibertine_RZIah.ttf' # font for the author/title
 fntsize_mdata = 25                          # fontsize for the author/title
 # don't touch
 imgnumber = 0
