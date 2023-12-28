@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 // this script turns quotes from books into images for use in a Kindle clock.
