@@ -23,6 +23,7 @@ $creditFont = "LinLibertine_RZIah.ttf";
 $row = 0;
 $filename = "litclock_annotated.csv";
 $count = 0;
+$gaps = 0;
 
 if (($handle = fopen($filename, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
@@ -50,7 +51,19 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
             $count++;
             echo ".";
         } else {
-            echo "\n$time: .";
+            echo "\n";
+            
+            # check for gaps
+            if (isset($last_time)) {
+                $new_gaps = time_to_minute_of_day($time) - time_to_minute_of_day($last_time) - 1;
+                if ($new_gaps > 0) {
+                    fwrite(STDERR, "WARNING: $new_gaps gap(s) detected between $last_time and $time!\n");
+                    $gaps += $new_gaps;
+                }
+            }
+
+            # new time
+            echo "$time: .";
             $last_time = $time;
             $count = 1;
         }
@@ -60,9 +73,16 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
     }
     echo "\n";
     fclose($handle);
+    
+    if ($gaps > 0) {
+        fwrite(STDERR, "WARNING: $gaps gap(s) in total!\n");
+    }
 }
 
-
+function time_to_minute_of_day($time) {
+    [$hour, $minute] = explode(':', $time);
+    return $hour * 60 + $minute;
+}
 
 function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
 
