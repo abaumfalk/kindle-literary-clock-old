@@ -27,8 +27,8 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
         $row++;
 
         $cols = count($data);
-        if ($cols != 5) {
-            echo "Warning: invalid data in $filename, line $row (expected 5 columns, found $cols)\n";
+        if ($cols < 5) {
+            echo "Warning: invalid data in $filename, line $row (expected at least 5 columns, found $cols)\n";
             continue;
         }
         $time = $data[0];
