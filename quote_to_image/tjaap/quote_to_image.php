@@ -25,12 +25,18 @@ $filename = "litclock_annotated.csv";
 if (($handle = fopen($filename, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
         $row++;
-
+        
+        if (substr($data[0], 0, 1) == '#') {
+            # ignore comments
+            continue;
+        }
+        
         $cols = count($data);
         if ($cols < 5) {
             echo "Warning: invalid data in $filename, line $row (expected at least 5 columns, found $cols)\n";
             continue;
         }
+        
         $time = $data[0];
         $timestring = trim($data[1]);
         $quote = $data[2];
