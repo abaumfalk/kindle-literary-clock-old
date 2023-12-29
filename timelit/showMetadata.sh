@@ -17,4 +17,4 @@ if [ -n "$current" ];
 fi
 
 # start waiting for new keystrokes
-/usr/bin/waitforkey 104 191 && sh /mnt/us/timelit/showMetadata.sh &
+/usr/bin/waitforkey 104 191 && /mnt/us/timelit/showMetadata.sh &

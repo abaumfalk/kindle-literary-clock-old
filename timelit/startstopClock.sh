@@ -15,10 +15,10 @@ if [ $clockrunning -eq 0 ]; then
 	#eips "Clock is not ticking. Lets wind it."
 
 	# run showMetadata.sh to enable the keystrokes that will show the metadata
-	sh /mnt/us/timelit/showMetadata.sh
+	/mnt/us/timelit/showMetadata.sh
 
 	touch /mnt/us/timelit/clockisticking
-	sh /mnt/us/timelit/timelit.sh
+	/mnt/us/timelit/timelit.sh
 
 else
 
