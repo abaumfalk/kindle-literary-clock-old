@@ -96,6 +96,11 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
 
     //text margin
     $margin = 26;
+    
+    // preprocess line breaks by adding newline to the following word
+    foreach (['<br>', '<br/>'] as $break) {
+        $quote = str_replace($break, " \n", $quote);
+    }
 
     // first, find the timestring to be highlighted in the quote
     // determine the position of the timestring in the quote (so after how many words it appears)
@@ -241,7 +246,12 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
     // echo "try " . $font_size . ", ";
 
     foreach($quote_array as $key => $word) {
-
+        $force_newline = false;
+        if (substr($word, 0, 1) == "\n") {
+            $force_newline = true;
+            $word = substr($word, 1);
+        }
+        
         # change the look of the text if it is part of the time string
         if ( in_array($key, range($timestringStarts, $timestringStarts+$timestring_wordcount)) ) {
             $font = $font_path_bold;
@@ -263,7 +273,7 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
         }
 
         // if the line plus the extra word is too wide for the specified width, then write the word one the next line. 
-        if ( ($position[0] + $textwidth) >= ($width - $margin) ) {
+        if ( $force_newline || ($position[0] + $textwidth) >= ($width - $margin)) {
             
             # 'carriage return':
             # reset x to the beginning of the line and push y down a line 
