@@ -20,11 +20,17 @@ $creditFont = "LinLibertine_RZIah.ttf";
 
 // get the quotes (including title and author) from a CSV file, 
 // and create unique images for them, one without and one with title and author
-$row = 1;
-if (($handle = fopen("litclock_annotated.csv", "r")) !== FALSE) {
+$row = 0;
+$filename = "litclock_annotated.csv";
+if (($handle = fopen($filename, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
-        $num = count($data);
         $row++;
+
+        $cols = count($data);
+        if ($cols != 5) {
+            echo "Warning: invalid data in $filename, line $row (expected 5 columns, found $cols)\n";
+            continue;
+        }
         $time = $data[0];
         $timestring = trim($data[1]);
         $quote = $data[2];
