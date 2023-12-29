@@ -22,6 +22,8 @@ $creditFont = "LinLibertine_RZIah.ttf";
 // and create unique images for them, one without and one with title and author
 $row = 0;
 $filename = "litclock_annotated.csv";
+$count = 0;
+
 if (($handle = fopen($filename, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
         $row++;
@@ -43,11 +45,20 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
         $quote = trim(preg_replace('/\s+/', ' ', $quote));
         $title = trim($data[3]);
         $author = trim($data[4]);
+        
+        if (isset($last_time) && $last_time == $time) {
+            $count++;
+            echo ".";
+        } else {
+            echo "\n$time: .";
+            $last_time = $time;
+            $count = 1;
+        }
 
-        // if ($row < 10)
         TurnQuoteIntoImage($time, $quote, $timestring, $title, $author);
 
     }
+    echo "\n";
     fclose($handle);
 }
 
@@ -95,8 +106,6 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
         $imagenumber = 0;
     }
     $previoustime = $time;
-
-    print "Image for " . $time .'_'. $imagenumber . "\n";
 
     // Save the image
     imagepng($png_image, 'images/quote_'.$time.'_'.$imagenumber.'.png');
