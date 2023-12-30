@@ -102,7 +102,7 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
     $margin = 26;
     
     // preprocess line breaks by adding newline to the following word
-    foreach (['<br>', '<br/>'] as $break) {
+    foreach (['<br>', '<br/>', '<br />'] as $break) {
         $quote = str_replace($break, " \n", $quote);
     }
 
