@@ -12,6 +12,12 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
+//image dimensions
+$width = 600;
+$height = 800;
+//text margin
+$margin = 26;
+
 $imagenumber = 0;
 $previoustime = 0;
 
@@ -72,7 +78,42 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
             $count = 1;
         }
 
-        TurnQuoteIntoImage($time, $quote, $timestring, $title, $author);
+        $png_image = TurnQuoteIntoImage($quote, $timestring);
+        
+        // serial number for when there is more than one quote for a certain minute 
+        $time = substr($time, 0, 2).substr($time, 3, 2);
+        if ($time == $previoustime) {
+            $imagenumber++;
+        } else {
+            $imagenumber = 0;
+        }
+        $previoustime = $time;
+
+        // Save the image
+        imagepng($png_image, 'images/quote_'.$time.'_'.$imagenumber.'.png');
+        
+        add_metadata($png_image, $title, $author);
+
+       // Save the image with metadata
+        imagepng($png_image, 'images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+
+        // Free up memory
+        imagedestroy($png_image);
+
+        // convert the image we made to greyscale
+        $im = new Imagick();
+        $im->readImage('images/quote_'.$time.'_'.$imagenumber.'.png');
+        $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
+        unlink('images/quote_'.$time.'_'.$imagenumber.'.png');
+        $im->writeImage('images/quote_'.$time.'_'.$imagenumber.'.png');
+
+        // convert the image we made to greyscale 
+        $im = new Imagick();
+        $im->readImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+        $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
+        unlink('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+        $im->writeImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+
 
     }
     echo "\n";
@@ -88,18 +129,9 @@ function time_to_minute_of_day($time) {
     return $hour * 60 + $minute;
 }
 
-function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
+function TurnQuoteIntoImage($quote, $timestring) {
 
-    global $font_path;
-    global $font_path_bold;
-    global $creditFont;
-
-    //image dimensions
-    $width = 600;
-    $height = 800;
-
-    //text margin
-    $margin = 26;
+    global $font_path, $font_path_bold, $width, $height, $margin;
     
     // preprocess line breaks by adding newline to the following word
     foreach (['<br>', '<br/>', '<br />'] as $break) {
@@ -115,8 +147,6 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
     // divide text in an array of words, based on spaces
     $quote_array = explode(' ', $quote);
 
-    $time = substr($time, 0, 2).substr($time, 3, 2);
-
     // font size to start with looking for a fit. a long quote of 125 words or 700 characters gives us a font size of 23, so 18 is a safe start.
     $font_size = 18;
 
@@ -124,26 +154,15 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
     // find the font size (recursively) for an optimal fit of the text in the bounding box
     // and create the image.
     list($png_image) = fitText($quote_array, $width, $height, $font_size, $timestringStarts, $timestring_wordcount, $margin);
-
-
-    // serial number for when there is more than one quote for a certain minute 
-    global $imagenumber;
-    global $previoustime;
-    if ($time == $previoustime) {
-        $imagenumber++;
-    } else {
-        $imagenumber = 0;
-    }
-    $previoustime = $time;
-
-    // Save the image
-    imagepng($png_image, 'images/quote_'.$time.'_'.$imagenumber.'.png');
-
-
-    ///// METADATA /////
-    // create another version, with title and author in the image
-
     
+    return $png_image;
+}
+
+
+// create another version, with title and author in the image
+function add_metadata($png_image, $title, $author) {
+    global $creditFont, $width, $height, $margin;
+
     // define text color
     $grey = imagecolorallocate($png_image, 125, 125, 125);
     $black = imagecolorallocate($png_image, 0, 0, 0);
@@ -203,27 +222,6 @@ function TurnQuoteIntoImage($time, $quote, $timestring, $title, $author) {
         imagettftext($png_image, $creditFont_size, 0, $metadataX, $metadataY, $black, $creditFont, $dash . $credits);
 
     }
-
-    // Save the image with metadata
-    imagepng($png_image, 'images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
-
-    // Free up memory
-    imagedestroy($png_image);
-
-    // convert the image we made to greyscale
-    $im = new Imagick();
-    $im->readImage('images/quote_'.$time.'_'.$imagenumber.'.png');
-    $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-    unlink('images/quote_'.$time.'_'.$imagenumber.'.png');
-    $im->writeImage('images/quote_'.$time.'_'.$imagenumber.'.png');
-
-    // convert the image we made to greyscale 
-    $im = new Imagick();
-    $im->readImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
-    $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-    unlink('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
-    $im->writeImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
-
 }
 
 
