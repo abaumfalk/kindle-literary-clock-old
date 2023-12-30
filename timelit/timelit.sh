@@ -1,11 +1,16 @@
 #!/bin/sh
 
+# originally written by Jaap Meijers and published at 
+# https://www.instructables.com/Literary-Clock-Made-From-E-reader/
+# licensed under CC-BY-NC-SA https://creativecommons.org/licenses/by-nc-sa/4.0/
+# (see licenses folder)
+
 # if the Kindle is not being used as clock, then just quit
 test -f /mnt/us/timelit/clockisticking || exit
 
 
 # find the current minute of the day
-MinuteOTheDay="$(env TZ=CEST date -R +"%H%M")";
+MinuteOTheDay="$(TZ='CET-1' date -R +"%H%M")";
 
 # check if there is at least one image for this minute 
 lines="$(find /mnt/us/timelit/images/quote_$MinuteOTheDay* 2>/dev/null | wc -l)"

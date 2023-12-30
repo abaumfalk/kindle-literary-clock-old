@@ -4,6 +4,10 @@
 // this script turns quotes from books into images for use in a Kindle clock.
 // Jaap Meijers, 2018
 
+# originally written by Jaap Meijers and published at 
+# https://www.instructables.com/Literary-Clock-Made-From-E-reader/
+# licensed under CC-BY-NC-SA https://creativecommons.org/licenses/by-nc-sa/4.0/
+# (see licenses folder)
 
 error_reporting(E_ALL);
 ini_set("display_errors", 1);

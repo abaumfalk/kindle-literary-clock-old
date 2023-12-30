@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# originally written by Jaap Meijers and published at 
+# https://www.instructables.com/Literary-Clock-Made-From-E-reader/
+# licensed under CC-BY-NC-SA https://creativecommons.org/licenses/by-nc-sa/4.0/
+# (see licenses folder)
+
 clockrunning=1
 
 # check if the clock 'app' is not running (by checking if the clockisticking file is there) 
