@@ -239,9 +239,6 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
     $grey = imagecolorallocate($png_image, 125, 125, 125);
     $black = imagecolorallocate($png_image, 0, 0, 0);
 
-    $timeLocation = 0;
-    $lineWidth = 0;
-
     // variable to hold the x and y position of words
     $position = array($margin,$margin+$font_size);
 
@@ -303,7 +300,7 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
     if ( $paragraphHeight < $height-100 ) { // leaving room for the credits below
         $result = fitText($quote_array, $width, $height, $font_size+1, $timestringStarts, $timestring_wordcount, $margin);
         if ( $result !== False ) {
-            list($png_image, $paragraphHeight, $font_size, $timeLocation) = $result;
+            list($png_image, $paragraphHeight, $font_size) = $result;
         };
     } else {
         // if this call to fitText returned a paragraph that is in fact higher than the height of the image,
@@ -311,7 +308,7 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
         return False;
     }
 
-    return array($png_image, $paragraphHeight, $font_size, $timeLocation);
+    return array($png_image, $paragraphHeight, $font_size);
 
 }
 
