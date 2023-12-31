@@ -153,7 +153,7 @@ function TurnQuoteIntoImage($quote, $timestring) {
     ///// QUOTE /////
     // find the font size (recursively) for an optimal fit of the text in the bounding box
     // and create the image.
-    list($png_image) = fitText($quote_array, $width, $height, $font_size, $timestringStarts, $timestring_wordcount, $margin);
+    list($png_image) = fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount);
     
     return $png_image;
 }
@@ -225,10 +225,9 @@ function add_metadata($png_image, $title, $author) {
 }
 
 
-function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $timestring_wordcount, $margin) {
+function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount) {
 
-    global $font_path_bold;
-    global $font_path;
+    global $font_path, $font_path_bold, $width, $height, $margin;
 
     // create image
     $png_image = imagecreate($width, $height)
@@ -298,7 +297,7 @@ function fitText($quote_array, $width, $height, $font_size, $timestringStarts, $
     // if the height of the whole text is smaller than the height of the image, then call this same function again
     $paragraphHeight = $position[1];
     if ( $paragraphHeight < $height-100 ) { // leaving room for the credits below
-        $result = fitText($quote_array, $width, $height, $font_size+1, $timestringStarts, $timestring_wordcount, $margin);
+        $result = fitText($quote_array, $font_size+1, $timestringStarts, $timestring_wordcount);
         if ( $result !== False ) {
             list($png_image, $paragraphHeight, $font_size) = $result;
         };
