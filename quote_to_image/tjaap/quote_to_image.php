@@ -153,7 +153,7 @@ function TurnQuoteIntoImage($quote, $timestring) {
     ///// QUOTE /////
     // find the font size (recursively) for an optimal fit of the text in the bounding box
     // and create the image.
-    list($png_image) = fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount);
+    $png_image = fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount);
     
     return $png_image;
 }
@@ -299,7 +299,7 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
     if ( $paragraphHeight < $height-100 ) { // leaving room for the credits below
         $result = fitText($quote_array, $font_size+1, $timestringStarts, $timestring_wordcount);
         if ( $result !== False ) {
-            list($png_image, $paragraphHeight, $font_size) = $result;
+            $png_image = $result;
         };
     } else {
         // if this call to fitText returned a paragraph that is in fact higher than the height of the image,
@@ -307,7 +307,7 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
         return False;
     }
 
-    return array($png_image, $paragraphHeight, $font_size);
+    return $png_image;
 
 }
 
