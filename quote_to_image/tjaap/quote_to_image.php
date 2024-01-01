@@ -19,7 +19,6 @@ $height = 800;
 $margin = 26;
 
 $imagenumber = 0;
-$previoustime = 0;
 
 // pad naar font file
 putenv('GDFONTPATH=' . realpath('../fonts/LinLibertine'));
@@ -74,48 +73,50 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
 
             # new time
             echo "$time: .";
-            $last_time = $time;
             $count = 1;
         }
 
         $png_image = TurnQuoteIntoImage($quote, $timestring);
         
-        // serial number for when there is more than one quote for a certain minute 
-        $time = substr($time, 0, 2).substr($time, 3, 2);
-        if ($time == $previoustime) {
+        // serial number for when there is more than one quote for a certain minute
+        if (isset($last_time) && $time == $last_time) {
             $imagenumber++;
         } else {
             $imagenumber = 0;
         }
-        $previoustime = $time;
+
+        $file_basename = "quote_" . substr($time, 0, 2) . substr($time, 3, 2) . "_$imagenumber";
 
         // Save the image
-        imagepng($png_image, 'images/quote_'.$time.'_'.$imagenumber.'.png');
+        $image_filename = "images/$file_basename.png";
+        imagepng($png_image, $image_filename);
         
         add_metadata($png_image, $title, $author);
 
-       // Save the image with metadata
-        imagepng($png_image, 'images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+        // Save the image with metadata
+        $image_filename_credits = "images/metadata/{$file_basename}_credits.png";
+        imagepng($png_image, $image_filename_credits);
 
         // Free up memory
         imagedestroy($png_image);
 
         // convert the image we made to greyscale
         $im = new Imagick();
-        $im->readImage('images/quote_'.$time.'_'.$imagenumber.'.png');
+        $im->readImage($image_filename);
         $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-        unlink('images/quote_'.$time.'_'.$imagenumber.'.png');
-        $im->writeImage('images/quote_'.$time.'_'.$imagenumber.'.png');
+        unlink($image_filename);
+        $im->writeImage($image_filename);
 
         // convert the image we made to greyscale 
         $im = new Imagick();
-        $im->readImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+        $im->readImage($image_filename_credits);
         $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-        unlink('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
-        $im->writeImage('images/metadata/quote_'.$time.'_'.$imagenumber.'_credits.png');
+        unlink($image_filename_credits);
+        $im->writeImage($image_filename_credits);
 
-
+        $last_time = $time;
     }
+
     echo "\n";
     fclose($handle);
     
