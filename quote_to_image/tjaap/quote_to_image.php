@@ -90,29 +90,17 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
         // Save the image
         $image_filename = "images/$file_basename.png";
         imagepng($png_image, $image_filename);
+        to_grayscale($image_filename);
         
         add_metadata($png_image, $title, $author);
 
         // Save the image with metadata
         $image_filename_credits = "images/metadata/{$file_basename}_credits.png";
         imagepng($png_image, $image_filename_credits);
+        to_grayscale($image_filename_credits);
 
         // Free up memory
         imagedestroy($png_image);
-
-        // convert the image we made to greyscale
-        $im = new Imagick();
-        $im->readImage($image_filename);
-        $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-        unlink($image_filename);
-        $im->writeImage($image_filename);
-
-        // convert the image we made to greyscale 
-        $im = new Imagick();
-        $im->readImage($image_filename_credits);
-        $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
-        unlink($image_filename_credits);
-        $im->writeImage($image_filename_credits);
 
         $last_time = $time;
     }
@@ -123,6 +111,14 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
     if ($gaps > 0) {
         fwrite(STDERR, "WARNING: $gaps gap(s) in total!\n");
     }
+}
+
+function to_grayscale($filename) {
+    $im = new Imagick();
+    $im->readImage($filename);
+    $im->setImageType(Imagick::IMGTYPE_GRAYSCALE);
+    unlink($filename);
+    $im->writeImage($filename);
 }
 
 function time_to_minute_of_day($time) {
