@@ -151,13 +151,10 @@ function TurnQuoteIntoImage($quote, $timestring) {
     // divide text in an array of words, based on spaces
     $quote_array = explode(' ', $quote);
 
-    // font size to start with looking for a fit. a long quote of 125 words or 700 characters gives us a font size of 23, so 18 is a safe start.
-    $font_size = 18;
-
     ///// QUOTE /////
     // find the font size (recursively) for an optimal fit of the text in the bounding box
     // and create the image.
-    $png_image = fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount);
+    $png_image = fitText($quote_array, $timestringStarts, $timestring_wordcount);
     
     return $png_image;
 }
@@ -221,7 +218,34 @@ function add_metadata($png_image, $title, $author) {
 }
 
 
-function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount) {
+function fitText($quote_array, $timestringStarts, $timestring_wordcount) {
+    global $height;
+
+    // font size to start with looking for a fit. a long quote of 125 words or 700 characters gives us a font size of 23, so 18 is a safe start.
+    $font_size = 18;
+
+    $current_image = False;
+    while (True) {
+        $result = text2image($quote_array, $font_size, $timestringStarts, $timestring_wordcount);
+        if ($result === False) break;
+
+        [$new_image, $text_height] = $result;
+        // echo "$font_size -> $text_height\n";
+
+        // resulting text height too large?
+        $credits_height = 100;
+        if ($text_height >= $height - $credits_height) { // leaving room for the credits below
+            return $current_image;
+        }
+        
+        $current_image = $new_image;
+        $font_size++;
+    }
+    
+    return $current_image;
+}
+
+function text2image($quote_array, $font_size, $timestringStarts, $timestring_wordcount) {
     global $font_path, $font_path_bold, $width, $height, $margin;
 
     // create image
@@ -288,20 +312,8 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
         $position[0] += $textwidth;
 
     }
-
-    // resulting text height too large?
-    $credits_height = 100;
-    if ($position[1] >= $height - $credits_height) { // leaving room for the credits below
-        return False;
-    }
-
-    // try with larger font
-    $result = fitText($quote_array, $font_size + 1, $timestringStarts, $timestring_wordcount);
-    if ($result !== False) {
-        $png_image = $result;
-    }
-
-    return $png_image;
+    
+    return [$png_image, $position[1]];
 }
 
 
