@@ -113,6 +113,7 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
     }
 }
 
+
 function to_grayscale($filename) {
     $im = new Imagick();
     $im->readImage($filename);
@@ -121,17 +122,19 @@ function to_grayscale($filename) {
     $im->writeImage($filename);
 }
 
+
 function time_to_minute_of_day($time) {
     [$hour, $minute] = explode(':', $time);
     return $hour * 60 + $minute;
 }
 
+
 function minute_of_day_to_time($minute) {
     return sprintf("%02d:%02d", intdiv($minute, 60), $minute % 60);
 }
 
-function TurnQuoteIntoImage($quote, $timestring) {
 
+function TurnQuoteIntoImage($quote, $timestring) {
     global $font_path, $font_path_bold, $width, $height, $margin;
     
     // preprocess line breaks by adding newline to the following word
@@ -141,9 +144,9 @@ function TurnQuoteIntoImage($quote, $timestring) {
 
     // first, find the timestring to be highlighted in the quote
     // determine the position of the timestring in the quote (so after how many words it appears)
-    $timestringStarts = count(explode(' ', stristr($quote, $timestring, true)))-1;
+    $timestringStarts = count(explode(' ', stristr($quote, $timestring, true))) - 1;
     // how many words long the timestring is
-    $timestring_wordcount = count(explode(' ', $timestring))-1;
+    $timestring_wordcount = count(explode(' ', $timestring)) - 1;
 
     // divide text in an array of words, based on spaces
     $quote_array = explode(' ', $quote);
@@ -160,7 +163,7 @@ function TurnQuoteIntoImage($quote, $timestring) {
 }
 
 
-// create another version, with title and author in the image
+// add title and author to the image
 function add_metadata($png_image, $title, $author) {
     global $creditFont, $width, $height, $margin;
 
@@ -175,24 +178,20 @@ function add_metadata($png_image, $title, $author) {
 
     // if the metadata are longer than 45 characters, replace a space by a newline from the end,
     // just as long the paragraph is getting smaller. stop when the box gets wider again.
-    list($metawidth, $metaheight, $metaleft, $metatop) = measureSizeOfTextbox($creditFont_size, $creditFont, $dash . $credits);
+    [$metawidth, $metaheight, $metaleft, $metatop] = measureSizeOfTextbox($creditFont_size, $creditFont, $dash . $credits);
     
-    if ( $metawidth > 500 ) {
-
+    if ($metawidth > 500) {
         $newCredits = array();
-
         $creditsArray = explode(" ", $credits);
-        
         $i = 1;
 
-        while ( True ) {
-
+        while (True) {
             // cut the metadata in two lines
-            $tmp0 = implode(" ", array_slice($creditsArray, 0, count($creditsArray)-$i));
-            $tmp1 = implode(" ", array_slice($creditsArray, 0-$i));
+            $tmp0 = implode(" ", array_slice($creditsArray, 0, count($creditsArray) - $i));
+            $tmp1 = implode(" ", array_slice($creditsArray, 0 - $i));
 
             // once the second line is (almost) longer than the first line, stop
-            if ( strlen($tmp1)+5 > strlen($tmp0) ) {
+            if (strlen($tmp1)+5 > strlen($tmp0)) {
                 break;
             } else { 
                 // if the second line is still shorter than the first, save it to a new string, but continue to look at a new fit.
@@ -201,7 +200,6 @@ function add_metadata($png_image, $title, $author) {
             }
 
             $i++;
-
         }
 
         list($textWidth1, $textheight1) = measureSizeOfTextbox($creditFont_size, $creditFont, $dash . $newCredits[0]);
@@ -211,23 +209,19 @@ function add_metadata($png_image, $title, $author) {
         $metadataX2 = $width-($textWidth2+$margin);
         $metadataY = $height-$margin;
 
-        imagettftext($png_image, $creditFont_size, 0, $metadataX1, floor($metadataY-($textheight1*1.1)), $black, $creditFont, $dash . $newCredits[0]);
+        imagettftext($png_image, $creditFont_size, 0, $metadataX1, floor($metadataY-($textheight1 * 1.1)), $black, $creditFont, $dash . $newCredits[0]);
         imagettftext($png_image, $creditFont_size, 0, $metadataX2, $metadataY, $black, $creditFont, $newCredits[1]);
-        
     } else {
-
         // position of single line metadata
         $metadataX = ($width-$metaleft)-$margin;
         $metadataY = $height-$margin;
 
         imagettftext($png_image, $creditFont_size, 0, $metadataX, $metadataY, $black, $creditFont, $dash . $credits);
-
     }
 }
 
 
 function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordcount) {
-
     global $font_path, $font_path_bold, $width, $height, $margin;
 
     // create image
@@ -240,7 +234,7 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
     $black = imagecolorallocate($png_image, 0, 0, 0);
 
     // variable to hold the x and y position of words
-    $position = array($margin,$margin+$font_size);
+    $position = array($margin, $margin + $font_size);
 
     // echo "try " . $font_size . ", ";
 
@@ -252,7 +246,7 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
         }
         
         # change the look of the text if it is part of the time string
-        if ( in_array($key, range($timestringStarts, $timestringStarts+$timestring_wordcount)) ) {
+        if (in_array($key, range($timestringStarts, $timestringStarts + $timestring_wordcount))) {
             $font = $font_path_bold;
             $textcolor = $black;
         } else {
@@ -267,17 +261,17 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
 
         // if one word exceeds the width of the image (this sometimes happens when the quote is very short),
         // then stop trying to make the font size even bigger.
-        if ( $textwidth > ($width - $margin) ) {
+        if ($textwidth > ($width - $margin)) {
             return False;
         }
 
         // if the line plus the extra word is too wide for the specified width, then write the word one the next line. 
-        if ( $force_newline || ($position[0] + $textwidth) >= ($width - $margin)) {
+        if ($force_newline || ($position[0] + $textwidth) >= ($width - $margin)) {
             
             # 'carriage return':
             # reset x to the beginning of the line and push y down a line 
             $position[0] = $margin;
-            $position[1] = $position[1] + round($font_size*1.618); // 'golden ratio' line height
+            $position[1] = $position[1] + round($font_size * 1.618); // 'golden ratio' line height
 
             # write the word to the image
             imagettftext($png_image, $font_size, 0, $position[0], $position[1], $textcolor, $font, $word);
@@ -297,11 +291,11 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
 
     // if the height of the whole text is smaller than the height of the image, then call this same function again
     $paragraphHeight = $position[1];
-    if ( $paragraphHeight < $height-100 ) { // leaving room for the credits below
-        $result = fitText($quote_array, $font_size+1, $timestringStarts, $timestring_wordcount);
+    if ($paragraphHeight < $height - 100) { // leaving room for the credits below
+        $result = fitText($quote_array, $font_size + 1, $timestringStarts, $timestring_wordcount);
         if ( $result !== False ) {
             $png_image = $result;
-        };
+        }
     } else {
         // if this call to fitText returned a paragraph that is in fact higher than the height of the image,
         // then return without those values
@@ -309,11 +303,10 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
     }
 
     return $png_image;
-
 }
 
-function measureSizeOfTextbox($font_size, $font_path, $text) {
 
+function measureSizeOfTextbox($font_size, $font_path, $text) {
     $box = imagettfbbox($font_size, 0, $font_path, $text);
 
     $min_x = min( array($box[0], $box[2], $box[4], $box[6]) );
@@ -327,8 +320,5 @@ function measureSizeOfTextbox($font_size, $font_path, $text) {
     $top    = abs( $min_y ) + $height;
 
     return array($width, $height, $left, $top);
-
 }
-
-
 ?>
