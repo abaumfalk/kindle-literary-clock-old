@@ -289,17 +289,16 @@ function fitText($quote_array, $font_size, $timestringStarts, $timestring_wordco
 
     }
 
-    // if the height of the whole text is smaller than the height of the image, then call this same function again
-    $paragraphHeight = $position[1];
-    if ($paragraphHeight < $height - 100) { // leaving room for the credits below
-        $result = fitText($quote_array, $font_size + 1, $timestringStarts, $timestring_wordcount);
-        if ( $result !== False ) {
-            $png_image = $result;
-        }
-    } else {
-        // if this call to fitText returned a paragraph that is in fact higher than the height of the image,
-        // then return without those values
+    // resulting text height too large?
+    $credits_height = 100;
+    if ($position[1] >= $height - $credits_height) { // leaving room for the credits below
         return False;
+    }
+
+    // try with larger font
+    $result = fitText($quote_array, $font_size + 1, $timestringStarts, $timestring_wordcount);
+    if ($result !== False) {
+        $png_image = $result;
     }
 
     return $png_image;
