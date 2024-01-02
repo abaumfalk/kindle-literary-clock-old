@@ -32,7 +32,7 @@ $creditFont = "LinLibertine_RZIah.ttf";
 $row = 0;
 $filename = "litclock_annotated.csv";
 $count = 0;
-$gaps = 0;
+$missing = [];
 
 if (($handle = fopen($filename, "r")) !== FALSE) {
     while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
@@ -62,12 +62,12 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
         } else {
             echo "\n";
             
-            # check for gaps
+            # check for missing times
             if (isset($last_time)) {
-                $new_gaps = time_to_minute_of_day($time) - time_to_minute_of_day($last_time) - 1;
-                if ($new_gaps > 0) {
-                    fwrite(STDERR, "WARNING: $new_gaps gap(s) detected between $last_time and $time!\n");
-                    $gaps += $new_gaps;
+                for ($missing_minute = time_to_minute_of_day($last_time) + 1; $missing_minute < time_to_minute_of_day($time); $missing_minute++) {
+                    $missing_time = minute_of_day_to_time($missing_minute);
+                    $missing[] = $missing_time;
+                    fwrite(STDERR, "$missing_time: missing\n");
                 }
             }
 
@@ -108,8 +108,8 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
     echo "\n";
     fclose($handle);
     
-    if ($gaps > 0) {
-        fwrite(STDERR, "WARNING: $gaps gap(s) in total!\n");
+    if ($missing) {
+        fwrite(STDERR, "WARNING: the following quotes are missing:\n" . join(', ', $missing) . "\n");
     }
 }
 
@@ -124,6 +124,10 @@ function to_grayscale($filename) {
 function time_to_minute_of_day($time) {
     [$hour, $minute] = explode(':', $time);
     return $hour * 60 + $minute;
+}
+
+function minute_of_day_to_time($minute) {
+    return sprintf("%02d:%02d", intdiv($minute, 60), $minute % 60);
 }
 
 function TurnQuoteIntoImage($quote, $timestring) {
