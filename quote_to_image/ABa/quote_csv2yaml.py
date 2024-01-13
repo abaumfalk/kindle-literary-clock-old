@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import re
 from argparse import ArgumentParser
 from csv import DictReader
 from pathlib import Path
@@ -32,6 +33,11 @@ def read_csv(src_file):
         result = list(reader)
 
     return result
+
+
+def cleanup_quote(quote):
+    # use paired quotation marks
+    re.sub(r'(\")(.?)(\")', '“\g<2>”', quote)
 
 
 class Quote(str):
