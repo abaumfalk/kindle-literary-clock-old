@@ -19,8 +19,11 @@ layout = pangocairocffi.create_layout(context)
 
 layout.wrap = pangocffi.WrapMode.WORD
 layout.width = units_from_double(WIDTH)
-layout.text = (f"This is a long example text, which should be wrapped to fit the current width to the "
-               f"layout width of {WIDTH}.")
+layout.apply_markup(f"This is a <b>long</b> example-text, which should be wrapped to fit to the "
+                    f"layout width of {WIDTH}; by the way:\n"
+                    '<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!\n'
+                    'Now we have all flexibility needed to display the time in bold letters, such as <b>11:43</b>, '
+                    'anywhere in the text!')
 
 pangocairocffi.show_layout(context, layout)
 surface.write_to_png("test.png")
