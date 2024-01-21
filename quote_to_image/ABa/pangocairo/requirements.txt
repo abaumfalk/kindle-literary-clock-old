@@ -1,0 +1,6 @@
+Package    Version
+---------- -------
+pip        22.0.2
+pycairo    1.25.1
+PyGObject  3.46.0
+setuptools 59.6.0
