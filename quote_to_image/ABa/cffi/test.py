@@ -19,14 +19,10 @@ layout = pangocairocffi.create_layout(context)
 
 layout.wrap = pangocffi.WrapMode.WORD
 layout.width = units_from_double(WIDTH)
-layout.apply_markup(f"This is a <b>long</b> example-text, which should be wrapped to fit to the "
+layout.apply_markup(f"<span font_desc='Sans 18'>This is a <b>long</b> example-text, which should be wrapped to fit to the "
                     f"layout width of {WIDTH}; by the way:\n"
-                    '<span foreground="blue" size="x-large">Blue text</span> is <i>cool</i>!\n'
                     'Now we have all flexibility needed to display the time in bold letters, such as <b>11:43</b>, '
-                    'anywhere in the text!')
-font = pangocffi.FontDescription()
-font.size = 60
-layout.font_description = font
+                    'anywhere in the text!</span>')
 
 inc, logical = layout.get_extents()
 print(f"inc rect: {units_to_double(inc.width)} x {units_to_double(inc.height)}")
